@@ -24,7 +24,7 @@ int main()
 	WORD windowsSocketVersion = MAKEWORD(2, 2);
 	//WSADATA contains information about the Windows Sockets implementation. Btw. WSA means WinSock API
 	WSADATA wsaData;
-	printf("Initializing Winsock...");
+	printf("Initializing Winsock...\n");
 	//WSAStartup initiate use of WS2_32.dll (Winsock DLL) and returns 0 if everythings is OK.
 	int result = WSAStartup(windowsSocketVersion, &wsaData); 
 	if (result != 0)
@@ -34,7 +34,7 @@ int main()
 	}
 	
 
-	//SETUP SERVER
+	//SERVER SETUP
 	SOCKET listenSocket = INVALID_SOCKET;
 	listenSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (listenSocket == INVALID_SOCKET)
@@ -44,10 +44,10 @@ int main()
 		return 1;
 	}
 
-	//Bind to the address
+	//Bind Socket to the address
 	struct sockaddr_in serverAddress;
 	serverAddress.sin_family = AF_INET;
-	serverAddress.sin_addr.S_un.S_addr = inet_addr(IPV4_ADDRESS);
+	inet_pton(AF_INET, (PCWSTR)(IPV4_ADDRESS), &serverAddress.sin_addr.S_un.S_addr);
 	serverAddress.sin_port = htons(PORT);
 	result = bind(listenSocket, &serverAddress, sizeof(serverAddress));
 	if (result == SOCKET_ERROR)
@@ -58,11 +58,20 @@ int main()
 		return 1;
 	}
 
+	//Listening on a Socket
+	if (listen(listenSocket, SOMAXCONN) == SOCKET_ERROR)
+	{
+		printf("Listen failed with error %d", WSAGetLastError());
+		closesocket(listenSocket);
+		WSACleanup();
+		return 1;
+	}
+
 
 
 
 	//CLEANUP
-	printf("Cleaning up...");
+	printf("Cleaning up...\n");
 	result = WSACleanup();
 	if (result != 0)
 	{
