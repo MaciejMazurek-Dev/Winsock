@@ -11,12 +11,9 @@
 //Pragma line below automatically link the Winsock library so socket functions work.
 #pragma comment(lib, "Ws2_32.lib")
 
-
 #define IPV4_ADDRESS "127.0.0.1"
 #define PORT 6666
-
-
-
+#define BUFFER_LENGTH 256
 
 int main()
 {
@@ -24,7 +21,7 @@ int main()
 	WORD windowsSocketVersion = MAKEWORD(2, 2);
 	//WSADATA contains information about the Windows Sockets implementation. Btw. WSA means WinSock API
 	WSADATA wsaData;
-	printf("Initializing Winsock...\n");
+	printf("Initializing Winsock\n");
 	//WSAStartup initiate use of WS2_32.dll (Winsock DLL) and returns 0 if everythings is OK.
 	int result = WSAStartup(windowsSocketVersion, &wsaData); 
 	if (result != 0)
@@ -60,7 +57,8 @@ int main()
 	}
 
 	//Listening on a Socket
-	if (listen(listenSocket, SOMAXCONN) == SOCKET_ERROR)
+	result = listen(listenSocket, SOMAXCONN);
+	if (result == SOCKET_ERROR)
 	{
 		printf("Listen failed with error: %d\n", WSAGetLastError());
 		closesocket(listenSocket);
@@ -69,9 +67,10 @@ int main()
 	}
 
 	//Accepting a connection
+	printf("Listening for incoming connections...\n");
 	SOCKET clientSocket;
 	clientSocket = INVALID_SOCKET;
-	clientSocket = accept(clientSocket, NULL, NULL);
+	clientSocket = accept(listenSocket, NULL, NULL);
 	if (clientSocket == INVALID_SOCKET)
 	{
 		printf("Accepting client connection failed with error: %d\n", WSAGetLastError());
@@ -80,16 +79,40 @@ int main()
 		return 1;
 	}
 
+	//Receiving data
+	char receivingBuffer[BUFFER_LENGTH];
+	int bufferLength = BUFFER_LENGTH;
+	int receiveResult;
+	do
+	{
+		receiveResult = recv(clientSocket, &receivingBuffer, bufferLength, 0);
+		if (receiveResult > 0)
+		{
+			printf("Bytes received: %d\n", receiveResult);
+		}
+		else if(receiveResult == 0)
+		{
+			printf(receivingBuffer);
+			printf("All data received.\n");
+		}
+		else
+		{
+			printf("Receiving data failed with error: %d\n", WSAGetLastError());
+		}
+	} while (receiveResult > 0);
+
+
 
 	//CLEANUP
 	printf("Cleaning up...\n");
+	closesocket(listenSocket);
+	closesocket(clientSocket);
 	result = WSACleanup();
 	if (result != 0)
 	{
 		printf("Cleanup failed with error: %d\n", result);
 		return 1;
 	}
-
 
 	return 0;
 }
