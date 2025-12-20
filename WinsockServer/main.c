@@ -47,12 +47,13 @@ int main()
 	//Bind Socket to the address
 	struct sockaddr_in serverAddress;
 	serverAddress.sin_family = AF_INET;
+	//Convert IP text address into binary network format
 	inet_pton(AF_INET, (PCWSTR)(IPV4_ADDRESS), &serverAddress.sin_addr.S_un.S_addr);
 	serverAddress.sin_port = htons(PORT);
 	result = bind(listenSocket, &serverAddress, sizeof(serverAddress));
 	if (result == SOCKET_ERROR)
 	{
-		printf("Binding a socket failed with error %d\n", WSAGetLastError());
+		printf("Binding a socket failed with error: %d\n", WSAGetLastError());
 		closesocket(listenSocket);
 		WSACleanup();
 		return 1;
@@ -61,13 +62,23 @@ int main()
 	//Listening on a Socket
 	if (listen(listenSocket, SOMAXCONN) == SOCKET_ERROR)
 	{
-		printf("Listen failed with error %d", WSAGetLastError());
+		printf("Listen failed with error: %d\n", WSAGetLastError());
 		closesocket(listenSocket);
 		WSACleanup();
 		return 1;
 	}
 
-
+	//Accepting a connection
+	SOCKET clientSocket;
+	clientSocket = INVALID_SOCKET;
+	clientSocket = accept(clientSocket, NULL, NULL);
+	if (clientSocket == INVALID_SOCKET)
+	{
+		printf("Accepting client connection failed with error: %d\n", WSAGetLastError());
+		closesocket(listenSocket);
+		WSACleanup();
+		return 1;
+	}
 
 
 	//CLEANUP
