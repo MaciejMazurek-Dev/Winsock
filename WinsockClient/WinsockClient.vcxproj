@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{ce3c5237-9614-41e9-809b-c845de6035cd}</ProjectGuid>
-    <RootNamespace>WinsockServer</RootNamespace>
+    <ProjectGuid>{464fd96c-bbe1-491b-aa96-e7608ec111ea}</ProjectGuid>
+    <RootNamespace>WinsockClient</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -124,10 +124,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.c" />
-    <ClCompile Include="server.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="server.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
