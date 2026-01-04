@@ -95,6 +95,7 @@ int server(void)
 		WSACleanup();
 		return 1;
 	}
+	printf("Connection from client accepted.");
 
 	// Receive data from the client connection
 	char receivingBuffer[BUFFER_LENGTH];
